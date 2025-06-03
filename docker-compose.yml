@@ -1,0 +1,25 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: aurora-frontend
+    hostname: aurora-frontend
+    restart: no
+    # Nota: network_mode: "host" hace que el contenedor use la red del host
+    # Esto puede ser útil para desarrollo pero puede causar problemas de resolución DNS
+    # con otros servicios en la red compartida
+    network_mode: "host"
+    env_file:
+      - .env.local
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://0.0.0.0:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+networks:
+  shared_network:
+    external: true
+    name: shared_network
